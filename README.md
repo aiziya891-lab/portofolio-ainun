@@ -15,4 +15,5 @@ https://ainunfauziyah.shinyapps.io/shiny_regresi/
 ### 2. Analisis Data (R Markdown)
 Berisi analisis data menggunakan metode statistik dan visualisasi.
 
-🔗 (akan ditambahkan)
+🔗 Lihat Project:
+https://aiziya891-lab.github.io/portofolio-ainun/DiagramKendali.html
