@@ -1,0 +1,119 @@
+---
+title: "Projeck R Markdown"
+author: "Kelompok 4"
+date: "2024-10-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+**Nama anggota kelompok 4:**<br>
+1. J.H. Isabel D. Gultom (F1F023014)<br>
+2. A'inun Fauziyah        (F1F023017)<br>
+3. Arum Pujiastuti       (F1F023021)<br>
+4. Reva Amelia           (F1F023022)
+
+## Diagram Kendali (Data Atribut Defective)
+
+Berikut adalah **projeck komstat kelompok 4**, pada projeck kali ini kami membuat sebuah fungsi untuk memunculkan diagram kendali. Dimana diagram kendali sendiri merupakan sebuah diagram untuk memetakan kualitas (atribut ataupun variabel) dari waktu ke waktu. Diagram kendali yang ingin kami tampilkan adalah diagram kendali untuk data atribut (diskrit). Disini kami memilih diagram kendali atribut untuk defective yang artinya diagram ini mengacu pada seluruh unit yang ada. Yang mana jenis diagram kendalinya adalah diagram P dan diagram NP Disini kami menggunakan sebuah data dari Pia Bread untuk mencoba fungsi yang kami buat, berikut fungsi yang kami sajikan:
+
+## Memuat Library dan Data
+
+
+```{r libraries, echo=TRUE}
+
+# Memuat library yang diperlukan
+library(readxl)
+library(knitr)
+
+# Baca data dari file Excel
+DATAKOMSTAT <- read_excel("D:/SEMESTER 3/Komputasi Statistika/DATAKOMSTAT.xlsx")
+
+kable(DATAKOMSTAT) 
+
+```
+
+Ini merupakan fungsi untuk membaca file Excel dan menampilkan data dalam jendela Rstudio
+
+## Diagram Kendali P
+
+Diagram kendali P adalah diagram kontrol dari bagian yang tidak memenuhi syarat, menunjukkan proporsi cacat (cacat keseluruhan), Berikut adalah fungsinya
+
+```{r diagram-p, echo=TRUE}
+
+#Diagram kendali p
+Diagram_kendali_P <- function(cacat, sampel, judul = "Diagram Kendali p") {
+  # Fungsi untuk periksa apakah panjang cacat dan sampel sama pada 
+  if (length(cacat) != length(sampel)) {
+    stop("jumlah data produk cacat dan sampel harus sama.")
+  }
+  
+  # Hitung proporsi cacat untuk setiap sampel
+  proporsi <- cacat / sampel
+  
+  # Hitung rata-rata proporsi cacat (p-bar)
+  p_bar <- mean(proporsi)
+  
+  # Hitung batas pengendalian atas (UCL) dan bawah (LCL) Menggunakan ukuran sampel rata-rata
+  n_bar <- mean(sampel)  # Menggunakan variabel sampel di sini
+  UCL <- p_bar + 3 * sqrt(p_bar * (1 - p_bar) / n_bar)
+  LCL <- p_bar - 3 * sqrt(p_bar * (1 - p_bar) / n_bar)
+  
+  # LCL tidak boleh kurang dari 0
+  LCL <- max(LCL, 0)
+  
+  # Plot grafik diagram kendali p
+  plot(proporsi, type = "o", pch = 16, col = "blue", ylim = c(0, max(UCL, max(proporsi))),
+       xlab = "Sampel", ylab = "Proporsi Cacat", main = judul)
+  abline(h = p_bar, col = "grey", lwd = 2, lty = 2)  # Garis p-bar
+  abline(h = UCL, col = "pink", lwd = 2, lty = 2)      # Garis UCL
+  abline(h = LCL, col = "green", lwd = 2, lty = 2)      # Garis LCL
+  
+  # Tambahkan keterangan
+  legend("bottomright", legend = c("Proporsi Cacat", "Rata-rata (p-bar)", "UCL", "LCL"),
+         col = c("blue", "grey", "pink", "green"), lty = c(1, 2, 2, 2), lwd = 2, pch = c(16, NA, NA, NA),cex=0.6)
+}
+
+# Panggil fungsi untuk membuat peta kendali p
+Diagram_kendali_P(DATAKOMSTAT$`jumlah produk cacat`, DATAKOMSTAT$`jumlah produksi`, judul = "Diagram Kendali Proporsi Cacat")
+
+```
+
+## Diagram Kendali NP
+
+Diagram kendali NP merupakan diagram kontrol yang menunjukkan jumlah cacat dalam suatu populasi
+
+```{r diagram-np, echo=TRUE}
+
+# Fungsi untuk membuat diagram np
+Diagram_np <- function(cacat, ukuran, judul = "Diagram np") {
+  # Periksa apakah panjang cacat dan ukuran sama
+  if (length(cacat) != length(ukuran)) {
+    stop("Jumlah produk cacat dan ukuran sampel harus sama.")
+  }
+  
+  # Hitung batas pengendalian
+  n <- mean(ukuran)  # ukuran sampel rata-rata
+  p_bar <- sum(cacat) / sum(ukuran)  # rata-rata proporsi cacat
+  UCL <- n * p_bar + 3 * sqrt(n * p_bar * (1 - p_bar))  # Batas atas
+  LCL <- max(0, n * p_bar - 3 * sqrt(n * p_bar * (1 - p_bar)))  # Batas bawah
+  
+  # Plot diagram np
+  plot(cacat, type = "o", pch = 16, col = "blue", ylim = c(0, max(UCL, max(cacat))),
+       xlab = "Sampel", ylab = "Jumlah Cacat", main = judul)
+  abline(h = UCL, col = "red", lwd = 2, lty = 2)  # Garis UCL
+  abline(h = LCL, col = "green", lwd = 2, lty = 2)  # Garis LCL
+  abline(h = n * p_bar, col = "grey", lwd = 2, lty = 2)  # Garis rata-rata
+  
+  # Tambahkan keterangan
+  legend("bottomright", legend = c("Jumlah Cacat", "UCL", "LCL", "Rata-rata"),
+         col = c("blue", "red", "green", "grey"), lty = c(1, 2, 2, 2), lwd = 2, pch = c(16, NA, NA, NA), cex = 0.6)
+}
+
+# Panggil fungsi untuk membuat diagram np
+Diagram_np(DATAKOMSTAT$`jumlah produk cacat`, DATAKOMSTAT$`jumlah produksi`, judul = "Diagram np Jumlah Cacat")
+```
+
+Sekian projeck kami mengenai fungsi diagram kendali Data atribut defective
