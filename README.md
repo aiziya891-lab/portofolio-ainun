@@ -14,4 +14,4 @@ Aplikasi interaktif untuk analisis regresi dan visualisasi data.
 ### 2. Analisis Data (R Markdown)
 Berisi analisis data menggunakan metode statistik dan visualisasi.
 
-🔗 [Lihat Project](https://aiziya891-lab.github.io/portofolio-ainun/DiagramKendali.html)
+🔗 [Lihat Project](https://aiziya891-lab.github.io/portofolio-ainun/index.html)
